@@ -10,7 +10,7 @@
 // If you use LoopSim as part of your scientific work, you should
 // discuss and agree with the LoopSim authors how best to acknowledge
 // LoopSim in your work (e.g. whether through a reference, or through
-// joint authorship with the LoopSim authors). 
+// joint authorship with the LoopSim authors).
 //
 // To help guide LoopSim's proper use in its current early stage of
 // development, a condition of use of LoopSim is that any results that
@@ -23,7 +23,9 @@
 #include <iostream>
 #include <cassert>
 #include <cstdlib>
-#include "Flavour.hh"
+#include "loopsim/Flavour.hh"
+
+namespace loopsim {
 
 using namespace std;
 
@@ -121,7 +123,7 @@ void Flavour::_set_flavour(int flav, double m) {
   } else {
     cout << "ERROR in Flavour class (specified mass): Unrecognized flavour " << flav << "!" << endl;
     exit(-1);
-  }  
+  }
 }
 
 
@@ -169,7 +171,7 @@ Flavour Flavour::recombine(const Flavour & other_flav) const {
     cout << endl;
     exit(-1);
   }
-  
+
   double mA = this->m();
   double mB = other_flav.m();
   if (this->flavour()==81) {
@@ -215,7 +217,7 @@ Flavour Flavour::recombine(const Flavour & other_flav) const {
         case 24: return Flavour(24,mB);
         case -24: return Flavour(-24,mB);
       }
-  } 
+  }
 
   //We should not reach this point
   cout << "ERROR: A flavour is missing in function recombine() " << endl;
@@ -275,3 +277,6 @@ void Flavour::_set_all_flags_to_false() {
 void delete_flavour(int & user_index) {
   user_index = user_index & flavour_annihilator;
 }
+
+}
+

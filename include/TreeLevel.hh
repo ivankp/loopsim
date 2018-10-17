@@ -13,7 +13,7 @@
 // If you use LoopSim as part of your scientific work, you should
 // discuss and agree with the LoopSim authors how best to acknowledge
 // LoopSim in your work (e.g. whether through a reference, or through
-// joint authorship with the LoopSim authors). 
+// joint authorship with the LoopSim authors).
 //
 // To help guide LoopSim's proper use in its current early stage of
 // development, a condition of use of LoopSim is that any results that
@@ -24,17 +24,16 @@
 //-------------------------------------------------------ENDHEADER----
 
 #include <vector>
-#include "fastjet/ClusterSequence.hh"
-#include "fastjet/SharedPtr.hh"
-#include "Flavour.hh"
-#include "FlavourPlugin.hh"
 #include <cassert>
 #include <iostream>
 #include <limits>
+#include <fastjet/ClusterSequence.hh>
+#include <fastjet/SharedPtr.hh>
+#include "Flavour.hh"
+#include "FlavourPlugin.hh"
 #include "Event.hh"
 
-#define fj fastjet
-
+namespace loopsim {
 
 enum STATUS {
   undef=-4, //< undefined (but will be soon defined!)
@@ -46,7 +45,7 @@ enum STATUS {
 class TreeLevel {
 
 public:
-  
+
   /// nborn = number of born particles that we want in the event
   /// R = radius of the Flavour Algorithm
   TreeLevel(const Event & ev, int nborn, double R = 1, bool spread_virtuals = false);
@@ -76,7 +75,7 @@ private:
   /// function that sets the _status for all particles
   /// R is the radius of the Flavour Algorithm
   void init(double R);
-  // 
+  //
   /// function that updates _status information for particles indicated
   /// by the user indices of p1 and p2 (latter may be NULL), based on what
   /// happened in the p1,p2 clustering.
@@ -90,7 +89,7 @@ private:
   /// part of the clustering history.
   ///
   /// [NB: is called by init()]
-  // 
+  //
   void fill_status(int & ip, int jet_index, const fj::PseudoJet * p1,
 		   const fj::PseudoJet * p2 = NULL);
 
@@ -109,21 +108,21 @@ private:
   /// function that works through the list of particles
   /// that can be made virtual (_pseudo_virtual), and for each
   /// particle two options are followed (recursing in each case):
-  /// 
+  ///
   ///  - it is left as is
   ///  - it is made virtual
   ///
   /// The recursion's end point is reached when ip = _nvirtual and
   /// at that stage the recombinations are actually made (carefully, cf
   /// function make_virtual(...))
-  /// 
+  ///
   /// \param iloop is the number of loops decided on so far
   ///        (GPS+SS: presumably redundant)
   /// \param ip is the index of the particle being considered
   /// \param virtuals is the list of indices of the particles
   ///        to be made virtual
   ///
-  void generate_all_relevant_loops(int iloops, int ip, 
+  void generate_all_relevant_loops(int iloops, int ip,
 				   std::vector<int> virtuals);
 
 
@@ -142,7 +141,7 @@ private:
   /// all real children of their partner.
   Event make_virtual_spread(const std::vector<int> & virtuals);
 
-  
+
   /// given an event evt, sort out its recoils, including transverse
   /// momentum recoil and setting particles back to the correct mass.
   ///
@@ -150,7 +149,7 @@ private:
   /// @param vbeam :  the amount of momentum that has been recombined with the beam
   void do_recoils(Event & evt, const fj::PseudoJet & vbeam);
 
-  /// check that there's not missing pt, and if there is, output 
+  /// check that there's not missing pt, and if there is, output
   /// a warning
   void verify_no_missing_pt(const Event & ev, const char * label = 0, bool print_orig = false) const;
 
@@ -241,16 +240,16 @@ typedef fastjet::JetDefinition::DefaultRecombiner DefRecomb;
 /// MEAF: MostEnergeticAndFlavour
 class MEAFRecombiner : public  DefRecomb {
 public:
-  MEAFRecombiner(fastjet::RecombinationScheme recomb_scheme = 
-                    fastjet::E_scheme) : 
+  MEAFRecombiner(fastjet::RecombinationScheme recomb_scheme =
+                    fastjet::E_scheme) :
     DefRecomb(recomb_scheme) {};
 
   virtual std::string description() const {return DefRecomb::description()
       +" (with propagation of the most energetic particle's index)";}
 
   /// recombine pa and pb and put result into pab
-  virtual void recombine(const fastjet::PseudoJet & pa, 
-                         const fastjet::PseudoJet & pb, 
+  virtual void recombine(const fastjet::PseudoJet & pa,
+                         const fastjet::PseudoJet & pb,
                          fastjet::PseudoJet & pab) const {
     DefRecomb::recombine(pa,pb,pab);
     pab.set_user_index(recombined_user_index(pa,pb));
@@ -269,10 +268,9 @@ public:
 
 };
 
-
-
-fj::PseudoJet PxPyPzM(const double px, const double py, 
+fj::PseudoJet PxPyPzM(const double px, const double py,
 		      const double pz, const double M = 0.0);
 
+}
 
 #endif //__TREELEVEL_HH__

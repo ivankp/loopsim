@@ -147,12 +147,13 @@
 
  **/
 
-#include "LoopSim.hh"
 #include <iostream>
 #include <cstdlib>
+#include "loopsim/LoopSim.hh"
 
 using namespace std;
 
+namespace loopsim {
 
 LoopSim::LoopSim(int order, int iloops, const Event & ev, 
 		 double R, int nborn, bool spread_virtuals) {
@@ -290,6 +291,8 @@ void LoopSim::print_all_events(bool cart) {
   _tl_j_max = tl_j_max;
   _ev_i_max = ev_i_max;
   _ev_j_max = ev_j_max; 
+
+}
 
 }
 

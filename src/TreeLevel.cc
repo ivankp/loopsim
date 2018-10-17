@@ -10,7 +10,7 @@
 // If you use LoopSim as part of your scientific work, you should
 // discuss and agree with the LoopSim authors how best to acknowledge
 // LoopSim in your work (e.g. whether through a reference, or through
-// joint authorship with the LoopSim authors). 
+// joint authorship with the LoopSim authors).
 //
 // To help guide LoopSim's proper use in its current early stage of
 // development, a condition of use of LoopSim is that any results that
@@ -20,16 +20,17 @@
 // $Id: TreeLevel.cc 947 2012-03-15 10:10:26Z sapeta $
 //-------------------------------------------------------ENDHEADER----
 
-#include "TreeLevel.hh"
-#include "ReshufflePlugin.hh"
 #include <iostream>
 #include <iomanip>
 #include <cassert>
 #include <cstdlib>
+#include "loopsim/TreeLevel.hh"
+#include "loopsim/ReshufflePlugin.hh"
+
+namespace loopsim {
 
 using namespace std;
 using namespace fastjet;
-
 
 void print_history(const ClusterSequence::history_element * hist) {
   cout << hist->parent1 << "  " << hist->parent2 << "  " << hist->child;
@@ -37,7 +38,7 @@ void print_history(const ClusterSequence::history_element * hist) {
 }
 
 //construct a pseudojet using M instead of E
-PseudoJet PxPyPzM(const double px, const double py, 
+PseudoJet PxPyPzM(const double px, const double py,
 		      const double pz, const double M) {
   double E = sqrt(px*px + py*py + pz*pz + M*M);
   return PseudoJet(px,py,pz,E);
@@ -69,7 +70,7 @@ TreeLevel::TreeLevel(const Event & ev, int nborn, double R, bool spread_virtuals
   //place never virtual particles first in the event
   init(R);
 
-  //resize in order to obtain all possible numbers of loops, 
+  //resize in order to obtain all possible numbers of loops,
   //from 0 to _nparticles
   _all_events.resize(_nparticles+1);
 
@@ -136,7 +137,7 @@ void TreeLevel::init(double R) {
   JetDefinition jet_def(&fp);
   jet_def.set_recombiner(&rec);
   _cs.reset(new ClusterSequence(_no_loop_event.particles,jet_def));
-  
+
   //sort the branchings into decreasing kt distance
   vector<AuxHist> aux_vector;
   for (unsigned i = 0; i < _cs->history().size(); i++) {
@@ -162,7 +163,7 @@ void TreeLevel::init(double R) {
     //int jet_user_index = _cs->jets()[jet_hist_index].user_index();
     // ---------
     // GPS: the general alternative which accounts for the
-    //      fact that jet indices and history indices do 
+    //      fact that jet indices and history indices do
     //      not always coincide
     hist = &(_cs->history()[jet_hist_index]);
 
@@ -199,7 +200,7 @@ void TreeLevel::init(double R) {
 }
 
 
-void TreeLevel::fill_status(int & ip, int jet_index, const PseudoJet * p1, 
+void TreeLevel::fill_status(int & ip, int jet_index, const PseudoJet * p1,
 			    const PseudoJet * p2) {
 
   //we delete info on flavour
@@ -212,10 +213,10 @@ void TreeLevel::fill_status(int & ip, int jet_index, const PseudoJet * p1,
     switch(status1) {
     case nc: return; //cannot become anything else
     case born: return; //already a born particle
-    case undef: 
+    case undef:
       if (ip<_nborn) _status[index1] = born; //becomes a born particle
       else _status[index1] = beam; //need to see later if it can become virtual
-      
+
       // // pseudocode alternative to account for configurations like:
       // // (q1->q1+W) recoiling against (q2), which has the problem that
       // // when nborn = 1 the (q1+W) object is "the born" particle. Then
@@ -223,7 +224,7 @@ void TreeLevel::fill_status(int & ip, int jet_index, const PseudoJet * p1,
       // // against W, which is a radical and unphysical change of
       // // topology. To work around this, one option is to look at the
       // // flavour of born 1, and if it's a parton declare that there has to be
-      // // a second born particle. 
+      // // a second born particle.
       // //
       // // [Revisit this is we ever go to single top production!!!!]
       // if (ip<_nborn) {
@@ -237,7 +238,7 @@ void TreeLevel::fill_status(int & ip, int jet_index, const PseudoJet * p1,
       ip++;
       return;
     default:
-    //status1 should be nc,born, or undef (ie <-1)  because it cannot cluster 
+    //status1 should be nc,born, or undef (ie <-1)  because it cannot cluster
     //twice with the beam, or cluster with another harder particle later
       cout << "it is not possible for status1 to be " << status1;
       cout << " in function fill_status(...)!" << endl;
@@ -247,7 +248,7 @@ void TreeLevel::fill_status(int & ip, int jet_index, const PseudoJet * p1,
   }
 
   //case where p1 clusters with p2.
-  int index2 = p2->user_index(); 
+  int index2 = p2->user_index();
   delete_flavour(index2); //delete info on flavour
   int status2 = _status[index2];
 
@@ -266,13 +267,13 @@ void TreeLevel::fill_status(int & ip, int jet_index, const PseudoJet * p1,
     break;
   case born: break;
   case nc: break;
-  default: 
+  default:
     //p1 was previously declared to cluster with the beam or another particle
     _status[index1] = nc;
     break;
   }
-  //necessarily, p2 is declared as clustering with p1, except if 
-  //it can be (or already is) a born particle, 
+  //necessarily, p2 is declared as clustering with p1, except if
+  //it can be (or already is) a born particle,
   //or if it was previously declared nc.
   switch(status2) {
   case undef:
@@ -335,7 +336,7 @@ void TreeLevel::finish_init() {
   // and set info that allows the event particles to be referenced
   // within the cluster sequence
   for (int i=0; i<_nparticles; i++) {ev.particles[i].set_cluster_hist_index(i);}
-  
+
   // finally, copy the reordered event across to the _no_loop_event
   for (int i=0; i<_nparticles; i++) {
     _no_loop_event.particles[i] = ev.particles[i];
@@ -493,7 +494,7 @@ Event TreeLevel::make_virtual(const vector<int> & virtuals) {
   // rounding errors
   do_recoils(evt, vbeam);
   return evt; */
-  
+
 
   //if there's at least one beam particle, then we will have to make a pt boost,
   //such that we get a purely transverse event, all particles having their
@@ -522,7 +523,7 @@ Event TreeLevel::make_virtual(const vector<int> & virtuals) {
     for (int i=0; i<_nreals; i++) {
       if (is_recombined[i]) {
 	PseudoJet * pi = &(evt.particles[i]);
-	*pi = PtYPhiM(pi->perp(),pi->rap(),pi->phi(),evt.particles[i].flavour().m());	
+	*pi = PtYPhiM(pi->perp(),pi->rap(),pi->phi(),evt.particles[i].flavour().m());
       }
     }
   }
@@ -623,7 +624,7 @@ Event TreeLevel::make_virtual_spread(const vector<int> & virtuals) {
       for (unsigned ich = 0; ich<chsize; ich++) {
       	if (!is_virtual[children[ich].cluster_hist_index()]) ptsum += children[ich].perp();
       }
-      
+
       // and assign the momentum of the virtual particle to all real
       // children in proportion to their original momenta
       // (identical in _new_cs and _no_loop_event).
@@ -639,7 +640,7 @@ Event TreeLevel::make_virtual_spread(const vector<int> & virtuals) {
       }
     }
   }
-  
+
   // now take the temporary event and decant just the part that is not virtual
   // MR: virtuals.size()==iloops, tmpevt.particles.size()==_nparticles
   evt.particles.reserve(tmpevt.particles.size() - virtuals.size());
@@ -658,7 +659,7 @@ Event TreeLevel::make_virtual_spread(const vector<int> & virtuals) {
   // make sure event is OK
   verify_no_missing_pt(evt, "make_virtual_spread",1);
 
-  return evt; 
+  return evt;
 }
 
 //----------------------------------------------------------------------
@@ -670,10 +671,10 @@ void TreeLevel::do_recoils(Event & evt, const PseudoJet & vbeam) {
   //If there's no beam particle, I restore true masses to recombined particles
   double rapidities[evt.particles.size()];
   double Etot = 0; //energy for the boost
-  
+
   bool no_beam_recoil = (vbeam.px() == 0 && vbeam.py() == 0);
 
-  
+
   if (no_beam_recoil) {
     // just put all particles on mass shell, while retaining their
     // pt, rapidity and azimuth; note that for some particles, this
@@ -709,13 +710,13 @@ void TreeLevel::do_recoils(Event & evt, const PseudoJet & vbeam) {
       evt.particles[0].recoil_decay_products();
     } else {
       // put all particles at central rapidity
-      // NB: if all particles that are present have zero mass and 
+      // NB: if all particles that are present have zero mass and
       //     identical phi(), then the resulting boost vector
       //     will be ill-defined (zero mass).
       for (unsigned i = 0; i < evt.particles.size(); i++) {
         LSParticle * pi = &(evt.particles[i]);
 	Flavour fi = pi->flavour();
-        double Mi = fi.m();	
+        double Mi = fi.m();
         //We should write our own unboost function, because we do not need
         //to recalculate k.m() for each unboosted particle...
 	pi->boost(k);
@@ -723,8 +724,8 @@ void TreeLevel::do_recoils(Event & evt, const PseudoJet & vbeam) {
 	pi->reset_4vector(PtYPhiM(pi->perp(),rapidities[i],pi->phi(),Mi));
 	pi->recoil_decay_products();
 	assert(fi.flavour()==pi->flavour().flavour());
-        
-        
+
+
       }
     }
     // record it for posterity...
@@ -743,7 +744,7 @@ void TreeLevel::verify_no_missing_pt(const Event & evt, const char * label, bool
        cerr << endl;
        print_event(evt,false,true,&std::cerr);
        if (print_orig) {
-         cerr << "Clustered with R = " << _cs->jet_def().R() 
+         cerr << "Clustered with R = " << _cs->jet_def().R()
 	      << " and original event was " << endl;
          print_event(_no_loop_event,false, true,&std::cerr);
        }
@@ -794,9 +795,11 @@ int MEAFRecombiner::recombined_user_index(const fastjet::PseudoJet & pa,
   case -1: //fB is closer
     return fAB.flavour_plus_index(iB);
   default: //not possible
-    cout << "ERROR: Problem in return value for function "; 
+    cout << "ERROR: Problem in return value for function ";
     cout << "Flavour::is_closer(*)!" << endl;
     exit(-1);
   }
+
+}
 
 }

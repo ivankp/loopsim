@@ -23,8 +23,9 @@
 // $Id: Flavour.hh 2255 2014-11-01 11:50:12Z sapeta $
 //-------------------------------------------------------ENDHEADER----
 
-
 #include <vector>
+
+namespace loopsim {
 
 //useful for conversions between flavours and fastjet's user_indexes
 const int flavour_annihilator = 0x0000FFFF;
@@ -113,5 +114,6 @@ private:
 /// delete info on flavour in user_index
 void delete_flavour(int & user_index);
 
+}
 
 #endif //_FLAVOUR_HH_

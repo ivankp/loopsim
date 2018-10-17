@@ -10,7 +10,7 @@
 // If you use LoopSim as part of your scientific work, you should
 // discuss and agree with the LoopSim authors how best to acknowledge
 // LoopSim in your work (e.g. whether through a reference, or through
-// joint authorship with the LoopSim authors). 
+// joint authorship with the LoopSim authors).
 //
 // To help guide LoopSim's proper use in its current early stage of
 // development, a condition of use of LoopSim is that any results that
@@ -20,11 +20,13 @@
 // $Id: FlavourPlugin.cc 802 2011-10-07 18:56:01Z salam $
 //-------------------------------------------------------ENDHEADER----
 
-#include "FlavourPlugin.hh"
-#include "fastjet/NNH.hh"
-#include "Flavour.hh"
 #include <vector>
 #include <limits>
+#include <fastjet/NNH.hh>
+#include "loopsim/FlavourPlugin.hh"
+#include "loopsim/Flavour.hh"
+
+namespace loopsim {
 
 using namespace std;
 
@@ -74,7 +76,7 @@ string FlavourPlugin::description() const {
 }
 
 
-void FlavourPlugin::run_clustering(fastjet::ClusterSequence & cs) 
+void FlavourPlugin::run_clustering(fastjet::ClusterSequence & cs)
   const {
   int njets = cs.jets().size();
   //define a non-const FlavourPlugin object in order to be used with
@@ -96,3 +98,6 @@ void FlavourPlugin::run_clustering(fastjet::ClusterSequence & cs)
   }
 
 }
+
+}
+

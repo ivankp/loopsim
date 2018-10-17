@@ -13,7 +13,7 @@
 // If you use LoopSim as part of your scientific work, you should
 // discuss and agree with the LoopSim authors how best to acknowledge
 // LoopSim in your work (e.g. whether through a reference, or through
-// joint authorship with the LoopSim authors). 
+// joint authorship with the LoopSim authors).
 //
 // To help guide LoopSim's proper use in its current early stage of
 // development, a condition of use of LoopSim is that any results that
@@ -24,12 +24,14 @@
 //-------------------------------------------------------ENDHEADER----
 
 #include <vector>
-#include "Flavour.hh"
-#include "FlavourPlugin.hh"
 #include <iostream>
 #include <limits>
+#include "Flavour.hh"
+#include "FlavourPlugin.hh"
 
-#define fj fastjet
+namespace loopsim {
+
+namespace fj = fastjet;
 
 //----------------------------------------------------------------------
 /// class that helps dealing with flavour and decay products
@@ -40,12 +42,12 @@ public:
 	     std::vector<fj::PseudoJet> decay_products = std::vector<fj::PseudoJet>());
   LSParticle(const fj::PseudoJet & p, int flavour,
 	     std::vector<fj::PseudoJet> decay_products = std::vector<fj::PseudoJet>());
-  
+
   const Flavour & flavour() const {return _f;}
   const std::vector<fj::PseudoJet> & decay_products() const {return _decay_products;}
   void set_flavour(Flavour f) {_f=f;}
   void set_decay_products(std::vector<fj::PseudoJet> dp) {_decay_products=dp;}
-  
+
   // only changes the (px,py,pz,E) components without modifying the user_index
   // and the cluster_hist_index (we also check that the flavour is not changed).
   void reset_4vector(const fj::PseudoJet & p);
@@ -74,9 +76,9 @@ public:
   std::vector<LSParticle> partons() const;
   std::vector<LSParticle> Hbosons() const;
   //std::vector<Flavour> flavours;
-  //the momenta wrt which we make the boost once some beam particles 
+  //the momenta wrt which we make the boost once some beam particles
   //become virtual
-  //std::vector<fastjet::PseudoJet> k; 
+  //std::vector<fastjet::PseudoJet> k;
 
   /// return the sum of all the particles' momenta
   fj::PseudoJet sum() const;
@@ -87,7 +89,7 @@ public:
 /// print events in the form:
 //  px,  py,  pz, E (if cart = true)
 //  pt, rap, phi, m (if cart = false)
-void print_event(const Event & ev, const bool cart = true, 
+void print_event(const Event & ev, const bool cart = true,
                  const bool with_decay_products = true,
 		 std::ostream* ostr = (&std::cout));
 
@@ -95,5 +97,6 @@ void print_jet(const fj::PseudoJet & p);
 
 void print_jet_ppvars(const fj::PseudoJet & p);
 
+}
 
 #endif //__EVENT_HH__

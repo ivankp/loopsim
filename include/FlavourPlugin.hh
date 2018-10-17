@@ -13,7 +13,7 @@
 // If you use LoopSim as part of your scientific work, you should
 // discuss and agree with the LoopSim authors how best to acknowledge
 // LoopSim in your work (e.g. whether through a reference, or through
-// joint authorship with the LoopSim authors). 
+// joint authorship with the LoopSim authors).
 //
 // To help guide LoopSim's proper use in its current early stage of
 // development, a condition of use of LoopSim is that any results that
@@ -23,8 +23,10 @@
 // $Id: FlavourPlugin.hh 802 2011-10-07 18:56:01Z salam $
 //-------------------------------------------------------ENDHEADER----
 
-#include "fastjet/ClusterSequence.hh"
 #include <string>
+#include <fastjet/ClusterSequence.hh>
+
+namespace loopsim {
 
 class FlavourPlugin : public fastjet::JetDefinition::Plugin {
 public:
@@ -32,10 +34,11 @@ public:
   FlavourPlugin(double R){_R = R;}
   virtual std::string description() const;
   virtual void run_clustering(fastjet::ClusterSequence &) const;
-  virtual double R() const {return _R;} 
+  virtual double R() const {return _R;}
 private:
   double _R;
 };
 
+}
 
 #endif // __FLAVOUR_PLUGIN_HH__
